@@ -1,142 +1,68 @@
-//rides are named as-is from their paper shorthand, rather than full official names except for Prince Charming Carousel to distingush it from carousel of progress
-//height is in inches
-//updated 
+var profileThrill = false;
+var profileHeight = 0;
 
-var AdventurelandArr = [
-    {
-        name: "Pirates",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "JungleCruise",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Aladdin",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Treehouse",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Tiki Hut",
-        height: "any",
-        thrill: false
-    }
-]
+$("#profileSave").on("click", function (event) {
+    event.preventDefault();
+    firebase.database().ref('profiles/' + uid).on('value', function (snapshot) {
+ console.log(snapshot);
+        //profileThrill = true if BOTH (the type is either thrill OR no pref)  
+        //  AND the physicalRestrict is false
+        profileThrill = ((snapshot.val().type === 'thrill' || snapshot.val().type === 'noPref') &&
+            snapshot.val().physicalRestrict === 'false')
+        profileHeight = parseInt(snapshot.val().maxHeight);
+        // console.log(profileThrill + ' ' + profileHeight)
+    });
+    firebase.database().ref('fastpass/' + uid).on('value', function (snapshot) {
+        console.log(snapshot);
+        fpArray = []
+        
+        thisRide=snapshot.val().fp1
+        var thisLand=getLand(thisRide)
+        fpArray.push({'fpName': thisRide,'fpTime' :snapshot.val().fpTime1,'land': thisLand})
+        
+        thisRide = snapshot.val().fp2
+        var thisLand = getLand(thisRide);
+        fpArray.push({'fpName': thisRide, 'fpTime': snapshot.val().fpTime2, 'land': thisLand})
+        
+        thisRide = snapshot.val().fp3
+        var thisLand = getLand(thisRide)
+        fpArray.push({'fpName': thisRide, 'fpTime': snapshot.val().fpTime3, 'land': thisLand})
+        //  console.log("db fast passes: "+fpArray)  
+        // fpArray.sort(function (a, b) {
+        //     return fpTime.a - fpTime.b
+        // })
+        console.log(JSON.stringify(fpArray))  
+       
+        });
 
-var frontierlandArr = [
-        {
-            name: "Splash Mountain",
-            height: 40,
-            thrill: true
-        },
-        {
-            name: "Thunder Mountain",
-            height: 40,
-            thrill: true
-        },
-        {
-            name: "Tom Sawyer", 
-            height: "any",
-            thrill: false
-        },
-        {
-            name: "Country Bears",
-            height: "any",
-            thrill: false
-        }
-]
 
-var LibertylandArr = [
-    {
-        name: "Haunted Mansion",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Hall of Presidents",
-        height: "any",
-        thrill: false
-    }
-]
+    
+     firebase.database().ref('favorites/' + uid).on('value', function (snapshot) {
+         console.log("db favorites: "+snapshot)
+         var favArray = []
+         thisRide = snapshot.val().fav1
+         var thisLand = getLand(thisRide)
+         favArray.push({'favName': thisRide, 'land': thisLand})
+         
+         thisRide = snapshot.val().fav2
+         var thisLand = getLand(thisRide)
+         favArray.push({'favName': thisRide, 'land': thisLand})
+         
+         thisRide = snapshot.val().fav3
+         var thisLand = getLand(thisRide)
+         favArray.push({'favName': thisRide, 'land': thisLand})
 
-var FantasylandArr = [
-    {
-        name: "Seven Dwarves",
-        height: 38,
-        thrill: false
-    },
-    {
-        name: "Pan",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Pooh",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Small World",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Barnstormer",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Dumbo",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Tea Cups",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Mermaid",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Prince Charming Carousel",
-        height: "any",
-        thrill: false
+         console.log("favorites: " + JSON.stringify(favArray))
+
+
+     });
+});
+
+function getLand(myRide){
+for (var i = 0; i < allRides.length; i += 1) {
+    if (allRides[i].name === myRide) {
+        thisLand = allRides[i].land
+        return thisLand
     }
-]
-var TomorrowlandArr = [
-    {
-        name: "Space Mountain",
-        height: "44",
-        thrill: true
-    },
-    {
-        name: "Buzz",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Astro Orbiter",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Peoplemover",
-        height: "any",
-        thrill: false
-    },
-    {
-        name: "Carousel of Progress",
-        height: "any",
-        thrill: false
-    }
-]
+}
+}
